@@ -36,6 +36,17 @@ public extension ObservableArray where Element: ObservableStructure {
         for element in self {
             element.propertyChanged.map({n in (element, n)}).subscribe(publisher)
         }
+        self.collectionChanged
+            .subscribeNext({event in
+                switch event {
+                case let .Added(_, elements):
+                    for element in elements {
+                        element.propertyChanged.map({n in (element, n)}).subscribe(publisher)
+                    }
+                case .Removed:
+                    break
+                }
+            })
         return publisher
     }
 
