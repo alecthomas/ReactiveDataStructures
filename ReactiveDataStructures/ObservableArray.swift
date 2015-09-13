@@ -9,13 +9,11 @@
 import Foundation
 import RxSwift
 
-public protocol ObservableEvent {}
-
 public protocol ObservableStructure {
     var propertyChanged: Observable<String> { get }
 }
 
-public enum ObservableArrayEvent<Element>: ObservableEvent {
+public enum ObservableArrayEvent<Element> {
     case Added(range: Range<Int>, elements: [Element])
     case Removed(range: Range<Int>, elements: [Element])
 }

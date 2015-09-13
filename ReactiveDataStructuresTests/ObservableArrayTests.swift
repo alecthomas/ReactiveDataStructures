@@ -10,7 +10,7 @@ import XCTest
 import RxSwift
 @testable import ReactiveDataStructures
 
-class ObservablesTests: XCTestCase {
+class ObservableArrayTests: XCTestCase {
     var collection:ObservableArray<String>!
 
     override func setUp() {

@@ -11,8 +11,6 @@
 		701E60F51BA564CD00488CFA /* ReactiveDataStructures.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 701E60EA1BA564CD00488CFA /* ReactiveDataStructures.framework */; settings = {ASSET_TAGS = (); }; };
 		701E61051BA564E500488CFA /* ObservableArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 701E61041BA564E500488CFA /* ObservableArray.swift */; settings = {ASSET_TAGS = (); }; };
 		701E61081BA564F900488CFA /* ObservableArrayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 701E61071BA564F900488CFA /* ObservableArrayTests.swift */; settings = {ASSET_TAGS = (); }; };
-		701E610A1BA5699000488CFA /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 701E61091BA5699000488CFA /* RxSwift.framework */; };
-		701E610C1BA56B6000488CFA /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 701E61091BA5699000488CFA /* RxSwift.framework */; };
 		701E61111BA56BFC00488CFA /* RxSwift.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701E61101BA56BFC00488CFA /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -48,8 +46,6 @@
 		701E61041BA564E500488CFA /* ObservableArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableArray.swift; sourceTree = "<group>"; };
 		701E61061BA564F900488CFA /* ReactiveDataStructuresTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ReactiveDataStructuresTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		701E61071BA564F900488CFA /* ObservableArrayTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableArrayTests.swift; sourceTree = "<group>"; };
-		701E61091BA5699000488CFA /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/Mac/RxSwift.framework; sourceTree = "<group>"; };
-		701E610D1BA56B7800488CFA /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/Mac/RxSwift.framework; sourceTree = "<group>"; };
 		701E61101BA56BFC00488CFA /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/Mac/RxSwift.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -58,7 +54,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				701E610A1BA5699000488CFA /* RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -67,7 +62,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				701E60F51BA564CD00488CFA /* ReactiveDataStructures.framework in Frameworks */,
-				701E610C1BA56B6000488CFA /* RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,8 +72,6 @@
 			isa = PBXGroup;
 			children = (
 				701E61101BA56BFC00488CFA /* RxSwift.framework */,
-				701E610D1BA56B7800488CFA /* RxSwift.framework */,
-				701E61091BA5699000488CFA /* RxSwift.framework */,
 				701E60EC1BA564CD00488CFA /* ReactiveDataStructures */,
 				701E60F81BA564CD00488CFA /* ReactiveDataStructuresTests */,
 				701E60EB1BA564CD00488CFA /* Products */,
@@ -432,6 +424,7 @@
 				701E61001BA564CD00488CFA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		701E61011BA564CD00488CFA /* Build configuration list for PBXNativeTarget "ReactiveDataStructuresTests" */ = {
 			isa = XCConfigurationList;
@@ -440,6 +433,7 @@
 				701E61031BA564CD00488CFA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
