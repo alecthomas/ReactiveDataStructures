@@ -9,7 +9,11 @@
 /* Begin PBXBuildFile section */
 		701E60EE1BA564CD00488CFA /* ReactiveDataStructures.h in Headers */ = {isa = PBXBuildFile; fileRef = 701E60ED1BA564CD00488CFA /* ReactiveDataStructures.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		701E60F51BA564CD00488CFA /* ReactiveDataStructures.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 701E60EA1BA564CD00488CFA /* ReactiveDataStructures.framework */; settings = {ASSET_TAGS = (); }; };
-		701E60FA1BA564CD00488CFA /* ReactiveDataStructuresTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 701E60F91BA564CD00488CFA /* ReactiveDataStructuresTests.swift */; };
+		701E61051BA564E500488CFA /* ObservableArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 701E61041BA564E500488CFA /* ObservableArray.swift */; settings = {ASSET_TAGS = (); }; };
+		701E61081BA564F900488CFA /* ObservableArrayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 701E61071BA564F900488CFA /* ObservableArrayTests.swift */; settings = {ASSET_TAGS = (); }; };
+		701E610A1BA5699000488CFA /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 701E61091BA5699000488CFA /* RxSwift.framework */; };
+		701E610C1BA56B6000488CFA /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 701E61091BA5699000488CFA /* RxSwift.framework */; };
+		701E61111BA56BFC00488CFA /* RxSwift.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701E61101BA56BFC00488CFA /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -22,13 +26,31 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		701E610F1BA56BEB00488CFA /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				701E61111BA56BFC00488CFA /* RxSwift.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		701E60EA1BA564CD00488CFA /* ReactiveDataStructures.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ReactiveDataStructures.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		701E60ED1BA564CD00488CFA /* ReactiveDataStructures.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReactiveDataStructures.h; sourceTree = "<group>"; };
 		701E60EF1BA564CD00488CFA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		701E60F41BA564CD00488CFA /* ReactiveDataStructuresTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReactiveDataStructuresTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		701E60F91BA564CD00488CFA /* ReactiveDataStructuresTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactiveDataStructuresTests.swift; sourceTree = "<group>"; };
 		701E60FB1BA564CD00488CFA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		701E61041BA564E500488CFA /* ObservableArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableArray.swift; sourceTree = "<group>"; };
+		701E61061BA564F900488CFA /* ReactiveDataStructuresTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ReactiveDataStructuresTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		701E61071BA564F900488CFA /* ObservableArrayTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableArrayTests.swift; sourceTree = "<group>"; };
+		701E61091BA5699000488CFA /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/Mac/RxSwift.framework; sourceTree = "<group>"; };
+		701E610D1BA56B7800488CFA /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/Mac/RxSwift.framework; sourceTree = "<group>"; };
+		701E61101BA56BFC00488CFA /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/Mac/RxSwift.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				701E610A1BA5699000488CFA /* RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,6 +67,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				701E60F51BA564CD00488CFA /* ReactiveDataStructures.framework in Frameworks */,
+				701E610C1BA56B6000488CFA /* RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,6 +77,9 @@
 		701E60E01BA564CD00488CFA = {
 			isa = PBXGroup;
 			children = (
+				701E61101BA56BFC00488CFA /* RxSwift.framework */,
+				701E610D1BA56B7800488CFA /* RxSwift.framework */,
+				701E61091BA5699000488CFA /* RxSwift.framework */,
 				701E60EC1BA564CD00488CFA /* ReactiveDataStructures */,
 				701E60F81BA564CD00488CFA /* ReactiveDataStructuresTests */,
 				701E60EB1BA564CD00488CFA /* Products */,
@@ -73,6 +100,7 @@
 			children = (
 				701E60ED1BA564CD00488CFA /* ReactiveDataStructures.h */,
 				701E60EF1BA564CD00488CFA /* Info.plist */,
+				701E61041BA564E500488CFA /* ObservableArray.swift */,
 			);
 			path = ReactiveDataStructures;
 			sourceTree = "<group>";
@@ -80,8 +108,9 @@
 		701E60F81BA564CD00488CFA /* ReactiveDataStructuresTests */ = {
 			isa = PBXGroup;
 			children = (
-				701E60F91BA564CD00488CFA /* ReactiveDataStructuresTests.swift */,
 				701E60FB1BA564CD00488CFA /* Info.plist */,
+				701E61071BA564F900488CFA /* ObservableArrayTests.swift */,
+				701E61061BA564F900488CFA /* ReactiveDataStructuresTests-Bridging-Header.h */,
 			);
 			path = ReactiveDataStructuresTests;
 			sourceTree = "<group>";
@@ -125,6 +154,7 @@
 				701E60F01BA564CD00488CFA /* Sources */,
 				701E60F11BA564CD00488CFA /* Frameworks */,
 				701E60F21BA564CD00488CFA /* Resources */,
+				701E610F1BA56BEB00488CFA /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -142,6 +172,7 @@
 		701E60E11BA564CD00488CFA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = SwapOff;
 				TargetAttributes = {
@@ -193,6 +224,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				701E61051BA564E500488CFA /* ObservableArray.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -200,7 +232,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				701E60FA1BA564CD00488CFA /* ReactiveDataStructuresTests.swift in Sources */,
+				701E61081BA564F900488CFA /* ObservableArrayTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -302,11 +334,16 @@
 		701E60FF1BA564CD00488CFA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = ReactiveDataStructures/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -314,17 +351,23 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.swapoff.ReactiveDataStructures;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		701E61001BA564CD00488CFA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = ReactiveDataStructures/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -338,22 +381,35 @@
 		701E61021BA564CD00488CFA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				INFOPLIST_FILE = ReactiveDataStructuresTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.swapoff.ReactiveDataStructuresTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "ReactiveDataStructuresTests/ReactiveDataStructuresTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		701E61031BA564CD00488CFA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				INFOPLIST_FILE = ReactiveDataStructuresTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.swapoff.ReactiveDataStructuresTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "ReactiveDataStructuresTests/ReactiveDataStructuresTests-Bridging-Header.h";
 			};
 			name = Release;
 		};

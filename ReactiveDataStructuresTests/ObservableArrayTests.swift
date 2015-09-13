@@ -8,7 +8,7 @@
 
 import XCTest
 import RxSwift
-@testable import Reactive
+@testable import ReactiveDataStructures
 
 class ObservablesTests: XCTestCase {
     var collection:ObservableArray<String>!
@@ -23,9 +23,9 @@ class ObservablesTests: XCTestCase {
         collection.collectionChanged
             .subscribeNext { event in
                 switch event {
-                case let .Inserted(location, insertedItem):
-                    XCTAssertEqual(insertedItem, item)
-                    XCTAssertEqual(location, 2)
+                case let .Added(location, actual):
+                    XCTAssertEqual(actual, [item])
+                    XCTAssertEqual(location.startIndex, 2)
                 default: break
                 }
         }
@@ -38,9 +38,9 @@ class ObservablesTests: XCTestCase {
         collection.collectionChanged
             .subscribeNext { event in
                 switch event {
-                case let .Inserted(location, insertedItem):
-                    XCTAssertEqual(insertedItem, item)
-                    XCTAssertEqual(location, 1)
+                case let .Added(location, insertedItems):
+                    XCTAssertEqual(insertedItems, [item])
+                    XCTAssertEqual(location.startIndex, 1)
                 default: break
                 }
         }
@@ -52,7 +52,7 @@ class ObservablesTests: XCTestCase {
         collection.collectionChanged
             .subscribeNext { event in
                 switch event {
-                case let .AddedRange(range, elements):
+                case let .Added(range, elements):
                     XCTAssertEqual(range.startIndex, 2)
                     XCTAssertEqual(range.endIndex, 4)
                     XCTAssertEqual(elements.first, items.first)
@@ -71,9 +71,9 @@ class ObservablesTests: XCTestCase {
         collection.collectionChanged
             .subscribeNext { event in
                 switch event {
-                case let .Removed(location, removedItem):
-                    XCTAssertEqual(removedItem, item)
-                    XCTAssertEqual(location, 2)
+                case let .Removed(location, removedItems):
+                    XCTAssertEqual(removedItems, [item])
+                    XCTAssertEqual(location.startIndex, 2)
                 default: break
                 }
         }
@@ -86,9 +86,9 @@ class ObservablesTests: XCTestCase {
         collection.collectionChanged
             .subscribeNext { event in
                 switch event {
-                case let .Removed(location, removedItem):
-                    XCTAssertEqual(removedItem, first)
-                    XCTAssertEqual(location, 0)
+                case let .Removed(location, removedItems):
+                    XCTAssertEqual(removedItems, [first!])
+                    XCTAssertEqual(location.startIndex, 0)
                 default: break
                 }
         }
@@ -101,9 +101,9 @@ class ObservablesTests: XCTestCase {
         collection.collectionChanged
             .subscribeNext { event in
                 switch event {
-                case let .Removed(location, removedItem):
-                    XCTAssertEqual(removedItem, last)
-                    XCTAssertEqual(location, 1)
+                case let .Removed(location, removedItems):
+                    XCTAssertEqual(removedItems, [last!])
+                    XCTAssertEqual(location.startIndex, 1)
                 default: break
                 }
         }
@@ -116,7 +116,7 @@ class ObservablesTests: XCTestCase {
         collection.collectionChanged
             .subscribeNext { event in
                 switch event {
-                case let .RemovedRange(range, elements):
+                case let .Removed(range, elements):
                     XCTAssertEqual(range.startIndex, 0)
                     XCTAssertEqual(range.endIndex, 2)
                     XCTAssertEqual(elements.first, firstElement)
@@ -135,17 +135,16 @@ class ObservablesTests: XCTestCase {
         collection.collectionChanged
             .subscribeNext { event in
                 switch event {
-                case let .AddedRange(range, elements):
+                case let .Added(range, elements):
                     XCTAssertEqual(range.startIndex, 0)
                     XCTAssertEqual(range.endIndex, 2)
                     XCTAssertEqual(elements.first, items.first)
                     XCTAssertEqual(elements.last, items.last)
-                case let .RemovedRange(range, elements):
+                case let .Removed(range, elements):
                     XCTAssertEqual(range.startIndex, 0)
                     XCTAssertEqual(range.endIndex, 2)
                     XCTAssertEqual(elements.first, firstElement)
                     XCTAssertEqual(elements.last, lastElement)
-                default: break
                 }
         }
     }
@@ -160,18 +159,17 @@ class ObservablesTests: XCTestCase {
 
     func testSubscriptIndex() {
         let newValue = "newValue"
-        let firstItem = collection.first
+        let firstItem = collection.first!
 
         collection.collectionChanged
             .subscribeNext { event in
                 switch event {
-                case let .Inserted(location, insertedItem):
-                    XCTAssertEqual(insertedItem, newValue)
-                    XCTAssertEqual(location, 0)
-                case let .Removed(location, removedItem):
-                    XCTAssertEqual(removedItem, firstItem)
-                    XCTAssertEqual(location, 0)
-                default: break
+                case let .Added(location, insertedItems):
+                    XCTAssertEqual(insertedItems, [newValue])
+                    XCTAssertEqual(location.startIndex, 0)
+                case let .Removed(location, removedItems):
+                    XCTAssertEqual(removedItems, [firstItem])
+                    XCTAssertEqual(location.startIndex, 0)
                 }
         }
 
