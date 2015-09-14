@@ -12,6 +12,8 @@
 		701E61051BA564E500488CFA /* ObservableArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 701E61041BA564E500488CFA /* ObservableArray.swift */; settings = {ASSET_TAGS = (); }; };
 		701E61081BA564F900488CFA /* ObservableArrayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 701E61071BA564F900488CFA /* ObservableArrayTests.swift */; settings = {ASSET_TAGS = (); }; };
 		701E61111BA56BFC00488CFA /* RxSwift.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701E61101BA56BFC00488CFA /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		70FBF4C81BA78A3E0019A32F /* RxBlocking.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70FBF4C71BA78A3E0019A32F /* RxBlocking.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		70FBF4C91BA78A4F0019A32F /* RxBlocking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FBF4C71BA78A3E0019A32F /* RxBlocking.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,6 +34,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				701E61111BA56BFC00488CFA /* RxSwift.framework in CopyFiles */,
+				70FBF4C81BA78A3E0019A32F /* RxBlocking.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -47,6 +50,7 @@
 		701E61061BA564F900488CFA /* ReactiveDataStructuresTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ReactiveDataStructuresTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		701E61071BA564F900488CFA /* ObservableArrayTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableArrayTests.swift; sourceTree = "<group>"; };
 		701E61101BA56BFC00488CFA /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/Mac/RxSwift.framework; sourceTree = "<group>"; };
+		70FBF4C71BA78A3E0019A32F /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxBlocking.framework; path = Carthage/Build/Mac/RxBlocking.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +66,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				701E60F51BA564CD00488CFA /* ReactiveDataStructures.framework in Frameworks */,
+				70FBF4C91BA78A4F0019A32F /* RxBlocking.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +76,7 @@
 		701E60E01BA564CD00488CFA = {
 			isa = PBXGroup;
 			children = (
+				70FBF4C71BA78A3E0019A32F /* RxBlocking.framework */,
 				701E61101BA56BFC00488CFA /* RxSwift.framework */,
 				701E60EC1BA564CD00488CFA /* ReactiveDataStructures */,
 				701E60F81BA564CD00488CFA /* ReactiveDataStructuresTests */,

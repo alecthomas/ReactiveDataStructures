@@ -8,6 +8,7 @@
 
 import XCTest
 import RxSwift
+import RxBlocking
 @testable import ReactiveDataStructures
 
 class TestStructure: ObservableStructure, CustomStringConvertible {
@@ -54,11 +55,9 @@ class ObservableArrayTests: XCTestCase {
         let item = "item"
         collection.collectionChanged
             .subscribeNext { event in
-                switch event {
-                case let .Added(location, insertedItems):
-                    XCTAssertEqual(insertedItems, [item])
-                    XCTAssertEqual(location.startIndex, 1)
-                default: break
+                if let (element, index) = event.insertedElement() {
+                    XCTAssertEqual(element, item)
+                    XCTAssertEqual(index, 1)
                 }
         }
         collection.insert(item, atIndex: 1)
@@ -87,11 +86,9 @@ class ObservableArrayTests: XCTestCase {
 
         collection.collectionChanged
             .subscribeNext { event in
-                switch event {
-                case let .Removed(location, removedItems):
-                    XCTAssertEqual(removedItems, [item])
-                    XCTAssertEqual(location.startIndex, 2)
-                default: break
+                if let (element, index) = event.removedElement() {
+                    XCTAssertEqual(element, item)
+                    XCTAssertEqual(index, 2)
                 }
         }
         collection.removeAtIndex(2)

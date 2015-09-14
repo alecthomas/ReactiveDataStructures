@@ -16,6 +16,32 @@ public protocol ObservableStructure {
 public enum ObservableArrayEvent<Element> {
     case Added(range: Range<Int>, elements: [Element])
     case Removed(range: Range<Int>, elements: [Element])
+
+    // Returns non-nil if the event is a single element insert.
+    public func insertedElement() -> (Element, Int)? {
+        switch self {
+        case let .Added(range, elements):
+            if elements.count == 1 && range.count == 0 {
+                return (elements[0], range.startIndex)
+            }
+        case .Removed:
+            break
+        }
+        return nil
+    }
+
+    // Returns non-nil if the event is a single element delete.
+    public func removedElement() -> (Element, Int)? {
+        switch self {
+        case let .Removed(range, elements):
+            if elements.count == 1 && range.count == 0 {
+                return (elements[0], range.startIndex)
+            }
+        case .Added:
+            break
+        }
+        return nil
+    }
 }
 
 public func  == <T: Equatable>(a: ObservableArrayEvent<T>, b: ObservableArrayEvent<T>) -> Bool {
