@@ -270,7 +270,7 @@ extension ObservableTimeTest {
 
         let start = NSDate()
 
-        let a = try! from([just(0), never()]).concat()
+        let a = try! [just(0), never()].asObservable().concat()
             .throttle(2.0, scheduler)
             .first()
 
@@ -1182,5 +1182,121 @@ extension ObservableTimeTest {
         XCTAssertEqual(xs.subscriptions, [
             Subscription(200, 1000)
             ])
+    }
+}
+
+//
+extension ObservableTimeTest {
+    func bufferWithTimeOrCount_Basic() {
+        let scheduler = TestScheduler(initialClock: 0)
+        
+        let xs = scheduler.createHotObservable([
+            next(205, 1),
+            next(210, 2),
+            next(240, 3),
+            next(280, 4),
+            next(320, 5),
+            next(350, 6),
+            next(370, 7),
+            next(420, 8),
+            next(470, 9),
+            completed(600)
+            ])
+        
+        let res = scheduler.start {
+            xs.buffer(timeSpan: 70, count: 3, scheduler: scheduler).map { EquatableArray($0) }
+        }
+        
+        XCTAssertEqual(res.messages, [
+            next(240, EquatableArray([1, 2, 3])),
+            next(310, EquatableArray([4])),
+            next(370, EquatableArray([5, 6, 7])),
+            next(440, EquatableArray([8])),
+            next(510, EquatableArray([9])),
+            next(580, EquatableArray([])),
+            next(600, EquatableArray([])),
+            completed(600)
+            ])
+        
+        XCTAssertEqual(xs.subscriptions, [
+            Subscription(200, 600)
+            ])
+    }
+    
+    func bufferWithTimeOrCount_Error() {
+        let scheduler = TestScheduler(initialClock: 0)
+        
+        let xs = scheduler.createHotObservable([
+            next(205, 1),
+            next(210, 2),
+            next(240, 3),
+            next(280, 4),
+            next(320, 5),
+            next(350, 6),
+            next(370, 7),
+            next(420, 8),
+            next(470, 9),
+            error(600, testError)
+            ])
+        
+        let res = scheduler.start {
+            xs.buffer(timeSpan: 70, count: 3, scheduler: scheduler).map { EquatableArray($0) }
+        }
+        
+        XCTAssertEqual(res.messages, [
+            next(240, EquatableArray([1, 2, 3])),
+            next(310, EquatableArray([4])),
+            next(370, EquatableArray([5, 6, 7])),
+            next(440, EquatableArray([8])),
+            next(510, EquatableArray([9])),
+            next(580, EquatableArray([])),
+            error(600, testError)
+            ])
+        
+        XCTAssertEqual(xs.subscriptions, [
+            Subscription(200, 600)
+            ])
+    }
+    
+    func bufferWithTimeOrCount_Disposed() {
+        let scheduler = TestScheduler(initialClock: 0)
+        
+        let xs = scheduler.createHotObservable([
+            next(205, 1),
+            next(210, 2),
+            next(240, 3),
+            next(280, 4),
+            next(320, 5),
+            next(350, 6),
+            next(370, 7),
+            next(420, 8),
+            next(470, 9),
+            completed(600)
+            ])
+        
+        let res = scheduler.start(370) {
+            xs.buffer(timeSpan: 70, count: 3, scheduler: scheduler).map { EquatableArray($0) }
+        }
+        
+        XCTAssertEqual(res.messages, [
+            next(240, EquatableArray([1, 2, 3])),
+            next(310, EquatableArray([4])),
+            next(370, EquatableArray([5, 6, 7]))
+            ])
+        
+        XCTAssertEqual(xs.subscriptions, [
+            Subscription(200, 370)
+            ])
+    }
+
+    func bufferWithTimeOrCount_Default() {
+        let backgroundScheduler = SerialDispatchQueueScheduler(globalConcurrentQueuePriority: .Default)
+        
+        let result = try! range(1, 10, backgroundScheduler)
+            .buffer(timeSpan: 1000, count: 3, scheduler: backgroundScheduler)
+            .skip(1)
+            .first()
+            
+        XCTAssertEqual(result!, [4, 5, 6])
     }
 }

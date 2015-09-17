@@ -32,10 +32,10 @@ func ==(lhs: SignupState, rhs: SignupState) -> Bool {
 }
 
 class GitHubAPI {
-    let dataScheduler: ImmediateScheduler
+    let dataScheduler: ImmediateSchedulerType
     let URLSession: NSURLSession
 
-    init(dataScheduler: ImmediateScheduler, URLSession: NSURLSession) {
+    init(dataScheduler: ImmediateSchedulerType, URLSession: NSURLSession) {
         self.dataScheduler = dataScheduler
         self.URLSession = URLSession
     }
@@ -54,8 +54,8 @@ class GitHubAPI {
                     return false
                 }
             }
-            .observeSingleOn(self.dataScheduler)
-            .catchErrorResumeNext(false)
+            .observeOn(self.dataScheduler)
+            .catchErrorJustReturn(false)
     }
     
     func signup(username: String, password: String) -> Observable<SignupState> {

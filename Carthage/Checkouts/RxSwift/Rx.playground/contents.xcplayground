@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<playground version='6.0' target-platform='osx' requires-full-environment='true' display-mode='rendered'>
+<playground version='6.0' target-platform='osx' requires-full-environment='true' display-mode='raw'>
     <pages>
         <page name='Index'/>
         <page name='Introduction'/>
         <page name='Subjects'/>
-        <page name='Creating_observables'/>
         <page name='Transforming_Observables'/>
         <page name='Filtering_Observables'/>
         <page name='Combining_Observables'/>

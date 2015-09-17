@@ -31,167 +31,6 @@ class ObservableConcurrencyTestBase : RxTest {
 class ObservableConcurrencyTest : ObservableConcurrencyTestBase {
 }
 
-// observeSingleOn
-extension ObservableConcurrencyTest {
-    func testObserveSingleOn_DeadlockSimple() {
-        let scheduler = TestScheduler(initialClock: 0)
-
-        var nEvents = 0
-
-        let observable = just(0).observeSingleOn(scheduler)
-        let _d = observable .subscribeNext { n in
-                nEvents++
-            }
-            .scopedDispose
-
-        scheduler.start()
-
-        XCTAssertEqual(nEvents, 1)
-    }
-
-    func testObserveSingleOn_DeadlockErrorImmediatelly() {
-        let scheduler = TestScheduler(initialClock: 0)
-
-        var nEvents = 0
-
-        let observable: Observable<Int> = failWith(testError).observeSingleOn(scheduler)
-        let _d = observable.subscribeError { n in
-                nEvents++
-            }
-            .scopedDispose
-
-        scheduler.start()
-
-        XCTAssertEqual(nEvents, 1)
-    }
-
-    func testObserveSingleOn_DeadlockEmpty() {
-        let scheduler = TestScheduler(initialClock: 0)
-
-        var nEvents = 0
-
-        let observable: Observable<Int> = empty().observeSingleOn(scheduler)
-        let _d = observable .subscribeCompleted {
-                nEvents++
-            }
-            .scopedDispose
-
-        scheduler.start()
-
-        XCTAssertEqual(nEvents, 1)
-    }
-
-    func testObserveSingleOn_Never() {
-        let scheduler = TestScheduler(initialClock: 0)
-
-        let xs = scheduler.createHotObservable([
-                next(150, 1),
-            ])
-
-        let res = scheduler.start { xs.observeSingleOn(scheduler) }
-
-        let correctMessages: [Recorded<Int>] = [
-        ]
-
-        let correctSubscriptions = [
-            Subscription(200, 1000)
-        ]
-
-        XCTAssertEqual(res.messages, correctMessages)
-        XCTAssertEqual(xs.subscriptions, correctSubscriptions)
-    }
-
-    func testObserveSingleOn_Empty() {
-        let scheduler = TestScheduler(initialClock: 0)
-
-        let xs = scheduler.createHotObservable([
-            next(150, 1),
-            completed(300)
-            ])
-
-        let res = scheduler.start { xs.observeSingleOn(scheduler) }
-
-        let correctMessages: [Recorded<Int>] = [
-            completed(301)
-        ]
-
-        let correctSubscriptions = [
-            Subscription(200, 301)
-        ]
-
-        XCTAssertEqual(res.messages, correctMessages)
-        XCTAssertEqual(xs.subscriptions, correctSubscriptions)
-    }
-
-    func testObserveSingleOn_Simple() {
-        let scheduler = TestScheduler(initialClock: 0)
-
-        let xs = scheduler.createHotObservable([
-            next(150, 1),
-            next(210, 0),
-            completed(300)
-            ])
-
-        let res = scheduler.start { xs.observeSingleOn(scheduler) }
-
-        let correctMessages: [Recorded<Int>] = [
-            next(301, 0),
-            completed(301)
-        ]
-
-        let correctSubscriptions = [
-            Subscription(200, 301)
-        ]
-
-        XCTAssertEqual(res.messages, correctMessages)
-        XCTAssertEqual(xs.subscriptions, correctSubscriptions)
-    }
-
-    func testObserveSingleOn_Error() {
-        let scheduler = TestScheduler(initialClock: 0)
-
-        let xs = scheduler.createHotObservable([
-            next(150, 1),
-            error(300, testError)
-            ])
-
-        let res = scheduler.start { xs.observeSingleOn(scheduler) }
-
-        let correctMessages: [Recorded<Int>] = [
-            error(301, testError)
-        ]
-
-        let correctSubscriptions = [
-            Subscription(200, 301)
-        ]
-
-        XCTAssertEqual(res.messages, correctMessages)
-        XCTAssertEqual(xs.subscriptions, correctSubscriptions)
-    }
-
-    func testObserveSingleOn_Dispose() {
-        let scheduler = TestScheduler(initialClock: 0)
-
-        let xs = scheduler.createHotObservable([
-            next(150, 1),
-            next(290, 0),
-            error(300, testError)
-            ])
-
-        let res = scheduler.start(290) { xs.observeSingleOn(scheduler) }
-
-        let correctMessages: [Recorded<Int>] = [
-        ]
-
-        let correctSubscriptions = [
-            Subscription(200, 290)
-        ]
-
-        XCTAssertEqual(res.messages, correctMessages)
-        XCTAssertEqual(xs.subscriptions, correctSubscriptions)
-    }
-}
-
 // observeOn serial scheduler
 extension ObservableConcurrencyTest {
 
@@ -265,21 +104,23 @@ extension ObservableConcurrencyTest {
 
     func testObserveOnDispatchQueue_DispatchQueueSchedulerIsSerial() {
         var numberOfConcurrentEvents: Int32 = 0
-        var numberOfExecutions = 0
+        var numberOfExecutions: Int32 = 0
         runDispatchQueueSchedulerTests { scheduler in
             XCTAssert(numberOfSerialDispatchQueueObservables == 0)
-            return sequenceOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-                .observeOn(scheduler)
-                .subscribeNext { e in
-                    XCTAssert(OSAtomicIncrement32(&numberOfConcurrentEvents) == 1)
-                    self.sleep(0.1) // should be enough to block the queue, so if it's concurrent, it will fail
-                    XCTAssert(OSAtomicDecrement32(&numberOfConcurrentEvents) == 0)
-                    numberOfExecutions++
-                }
+            let action = { (s: Void) -> Disposable in
+                XCTAssert(OSAtomicIncrement32(&numberOfConcurrentEvents) == 1)
+                self.sleep(0.1) // should be enough to block the queue, so if it's concurrent, it will fail
+                XCTAssert(OSAtomicDecrement32(&numberOfConcurrentEvents) == 0)
+                OSAtomicIncrement32(&numberOfExecutions)
+                return NopDisposable.instance
+            }
+            scheduler.schedule((), action: action)
+            scheduler.schedule((), action: action)
+            return NopDisposable.instance
         }
 
         XCTAssert(numberOfSerialDispatchQueueObservables == 0)
-        XCTAssert(numberOfExecutions == 11)
+        XCTAssert(numberOfExecutions == 2)
     }
 #endif
 
@@ -372,8 +213,6 @@ extension ObservableConcurrencyTest {
                 let subscription = (xs.observeOn(scheduler)).subscribe(observer)
                 XCTAssert(xs.subscriptions == [SubscribedToHotObservable])
                 xs.on(.Completed)
-                XCTAssert(xs.subscriptions == [SubscribedToHotObservable])
-
                 return subscription
             },
             { scheduler in
@@ -469,7 +308,7 @@ extension ObservableConcurrencyTest {
 // observeOn concurrent scheduler
 class ObservableConcurrentSchedulerConcurrencyTest: ObservableConcurrencyTestBase {
 
-    func createScheduler() -> ImmediateScheduler {
+    func createScheduler() -> ImmediateSchedulerType {
         let operationQueue = NSOperationQueue()
         operationQueue.maxConcurrentOperationCount = 8
         return OperationQueueScheduler(operationQueue: operationQueue)
@@ -726,7 +565,7 @@ class ObservableConcurrentSchedulerConcurrencyTest: ObservableConcurrencyTestBas
 }
 
 class ObservableConcurrentSchedulerConcurrencyTest2 : ObservableConcurrentSchedulerConcurrencyTest {
-    override func createScheduler() -> ImmediateScheduler {
+    override func createScheduler() -> ImmediateSchedulerType {
         return ConcurrentDispatchQueueScheduler(globalConcurrentQueuePriority: .Default)
     }
 }

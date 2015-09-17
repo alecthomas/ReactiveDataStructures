@@ -9,7 +9,6 @@
 import Foundation
 
 class Subscription<Element> : Disposable {
-    typealias ObserverType = Observer<Element>
     typealias KeyType = Bag<ObserverOf<Element>>.KeyType
     
     private var lock = SpinLock()
@@ -41,18 +40,26 @@ class Subscription<Element> : Disposable {
     }
 }
 
+/**
+Represents an object that is both an observable sequence as well as an observer.
+
+Each notification is broadcasted to all subscribed observers.
+*/
 public class PublishSubject<Element> : Observable<Element>, SubjectType, Cancelable, ObserverType {
-    public typealias E = Element
     public typealias SubjectObserverType = PublishSubject<Element>
     
     typealias DisposeKey = Bag<ObserverOf<Element>>.KeyType
     
-    private var lock = NSRecursiveLock()
+    private let lock = NSRecursiveLock()
+    
     // state
     var _disposed = false
     var observers = Bag<ObserverOf<Element>>()
     var stoppedEvent = nil as Event<Element>?
     
+    /**
+    Indicates whether the subject has been disposed.
+    */
     public var disposed: Bool {
         get {
             return self.lock.calculateLocked {
@@ -61,17 +68,18 @@ public class PublishSubject<Element> : Observable<Element>, SubjectType, Cancela
         }
     }
     
+    /**
+    Creates a subject.
+    */
     public override init() {
         super.init()
     }
     
-    public func dispose() {
-        self.lock.performLocked {
-            _disposed = true
-            self.observers = Bag()
-        }
-    }
+    /**
+    Notifies all subscribed observers about next event.
     
+    - parameter event: Event to send to the observers.
+    */
     public func on(event: Event<Element>) {
         lock.performLocked {
             switch event {
@@ -92,6 +100,12 @@ public class PublishSubject<Element> : Observable<Element>, SubjectType, Cancela
         }
     }
     
+    /**
+    Subscribes an observer to the subject.
+    
+    - parameter observer: Observer to subscribe to the subject.
+    - returns: Disposable object that can be used to unsubscribe the observer from the subject.
+    */
     public override func subscribe<O : ObserverType where O.E == Element>(observer: O) -> Disposable {
         return lock.calculateLocked {
             if let stoppedEvent = stoppedEvent {
@@ -100,11 +114,11 @@ public class PublishSubject<Element> : Observable<Element>, SubjectType, Cancela
             }
             
             if disposed {
-                observer.on(.Error(DisposedError))
+                observer.on(.Error(RxError.DisposedError))
                 return NopDisposable.instance
             }
             
-            let key = observers.put(observer.asObserver())
+            let key = observers.insert(observer.asObserver())
             return Subscription(subject: self, key: key)
         }
     }
@@ -115,8 +129,21 @@ public class PublishSubject<Element> : Observable<Element>, SubjectType, Cancela
         }
     }
     
+    /**
+    Returns observer interface for subject.
+    */
     public func asObserver() -> PublishSubject<Element> {
         return self
     }
     
+    /**
+    Unsubscribe all observers and release resources.
+    */
+    public func dispose() {
+        self.lock.performLocked {
+            _disposed = true
+            self.observers.removeAll()
+            self.stoppedEvent = nil
+        }
+    }
 }
