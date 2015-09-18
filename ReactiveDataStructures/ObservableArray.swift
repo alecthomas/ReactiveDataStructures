@@ -9,20 +9,16 @@
 import Foundation
 import RxSwift
 
-public protocol ObservableStructure {
-    var propertyChanged: Observable<String> { get }
-}
-
 public enum ObservableArrayEvent<Element> {
-    case Added(range: Range<Int>, elements: [Element])
-    case Removed(range: Range<Int>, elements: [Element])
+    case Added(elements: [Element], atIndex: Int)
+    case Removed(elements: [Element], atIndex: Int)
 
     // Returns non-nil if the event is a single element insert.
     public func insertedElement() -> (Element, Int)? {
         switch self {
-        case let .Added(range, elements):
-            if elements.count == 1 && range.count == 0 {
-                return (elements[0], range.startIndex)
+        case let .Added(elements, atIndex):
+            if elements.count == 1 {
+                return (elements[0], atIndex)
             }
         case .Removed:
             break
@@ -33,18 +29,18 @@ public enum ObservableArrayEvent<Element> {
     // Returns non-nil if the event is a single element delete.
     public func removedElement() -> (Element, Int)? {
         switch self {
-        case let .Removed(range, elements):
-            if elements.count == 1 && range.count == 0 {
-                return (elements[0], range.startIndex)
-            }
         case .Added:
             break
+        case let .Removed(elements, atIndex):
+            if elements.count == 1 {
+                return (elements[0], atIndex)
+            }
         }
         return nil
     }
 }
 
-public func  == <T: Equatable>(a: ObservableArrayEvent<T>, b: ObservableArrayEvent<T>) -> Bool {
+public func == <T: Equatable>(a: ObservableArrayEvent<T>, b: ObservableArrayEvent<T>) -> Bool {
     switch a {
     case let .Added(ai, ae):
         if case let .Added(bi, be) = b { return ai == bi && ae == be }
@@ -52,42 +48,6 @@ public func  == <T: Equatable>(a: ObservableArrayEvent<T>, b: ObservableArrayEve
         if case let .Removed(bi, be) = b { return ai == bi && ae == be }
     }
     return false
-}
-
-// Extend ObservableArray to allow observation of element changes
-// iff the Element is an ObservableStructure.
-public extension ObservableArray where Element: ObservableStructure {
-    public var elementChanged: Observable<(Element, String)> {
-        let publisher = PublishSubject<(Element, String)>()
-        for element in self {
-            element.propertyChanged.map({n in (element, n)}).subscribe(publisher)
-        }
-        self.collectionChanged
-            .subscribeNext({event in
-                switch event {
-                case let .Added(_, elements):
-                    for element in elements {
-                        element.propertyChanged.map({n in (element, n)}).subscribe(publisher)
-                    }
-                case .Removed:
-                    break
-                }
-            })
-        return publisher
-    }
-
-    public var anyChange: Observable<Void> {
-        return sequenceOf(
-            // Check changed elements for validity.
-            elementChanged
-                .map({(i, _) in
-                    return true
-                })
-                .filter({$0})
-                .map({_ in ()}),
-            collectionChanged.map({_ in ()})
-            ).merge()
-    }
 }
 
 // An Array-ish object that is observable.
@@ -119,52 +79,51 @@ public class ObservableArray<Element>: CollectionType, ArrayLiteralConvertible {
 
     public func append(element: Element) {
         source.append(element)
-        let range = Range<Int>(start: source.count - 1, end: source.count - 1)
-        collectionChanged.on(.Next(.Added(range: range, elements: [element])))
+        collectionChanged.on(.Next(.Added(elements: [element], atIndex: count - 1)))
     }
 
     public func removeAll() {
         let elements = source
         source.removeAll()
-        collectionChanged.on(.Next(.Removed(range: Range(start: elements.startIndex, end: elements.endIndex), elements: elements)))
+        collectionChanged.on(.Next(.Removed(elements: elements, atIndex: 0)))
     }
 
     public func removeAtIndex(index: Int) -> Element {
         let element = source.removeAtIndex(index)
-        collectionChanged.on(.Next(.Removed(range: Range(start: index, end: index), elements: [element])))
+        collectionChanged.on(.Next(.Removed(elements: [element], atIndex: index)))
         return element
     }
 
     public func removeFirst() -> Element {
         let element = source.removeFirst()
-        collectionChanged.on(.Next(.Removed(range: Range(start: 0, end: 0), elements: [element])))
+        collectionChanged.on(.Next(.Removed(elements: [element], atIndex: 0)))
         return element
     }
 
     public func removeLast() -> Element {
         let element = source.removeLast()
-        collectionChanged.on(.Next(.Removed(range: Range(start: count, end: count), elements: [element])))
+        collectionChanged.on(.Next(.Removed(elements: [element], atIndex: count)))
         return element
     }
 
     public func insert(element: Element, atIndex i: Int) {
         source.insert(element, atIndex: i)
-        collectionChanged.on(.Next(.Added(range: Range(start: i, end: i), elements: [element])))
+        collectionChanged.on(.Next(.Added(elements: [element], atIndex: i)))
     }
 
     public func appendContentsOf<S : SequenceType where S.Generator.Element == Element>(newElements: S) {
         let index = source.count
         let elements = Array(newElements)
         source.appendContentsOf(newElements)
-        collectionChanged.on(.Next(.Added(range: Range(start: index, end: index+elements.count), elements: elements)))
+        collectionChanged.on(.Next(.Added(elements: elements, atIndex: index)))
     }
 
     public func replaceRange<C : CollectionType where C.Generator.Element == Element>(range: Range<Int>, with elements: C) {
         let old = Array(source[range])
         let new = Array(elements)
         source.replaceRange(range, with: elements)
-        collectionChanged.on(.Next(.Removed(range: range, elements: old)))
-        collectionChanged.on(.Next(.Added(range: Range(start: range.startIndex, end: range.endIndex), elements: new)))
+        collectionChanged.on(.Next(.Removed(elements: old, atIndex: range.startIndex)))
+        collectionChanged.on(.Next(.Added(elements: new, atIndex: range.startIndex)))
     }
 
     public func popLast() -> Element? {
@@ -177,10 +136,9 @@ public class ObservableArray<Element>: CollectionType, ArrayLiteralConvertible {
         }
         set(value) {
             let old = source[index]
-            let range = Range<Int>(start: index, end: index)
             source[index] = value
-            collectionChanged.on(.Next(.Removed(range: range, elements: [old])))
-            collectionChanged.on(.Next(.Added(range: range, elements: [value])))
+            collectionChanged.on(.Next(.Removed(elements: [old], atIndex: index)))
+            collectionChanged.on(.Next(.Added(elements: [value], atIndex: index)))
         }
     }
 
@@ -191,8 +149,8 @@ public class ObservableArray<Element>: CollectionType, ArrayLiteralConvertible {
         set(value) {
             let old = Array(source[range])
             source[range] = value
-            collectionChanged.on(.Next(.Removed(range: range, elements: old)))
-            collectionChanged.on(.Next(.Added(range: Range(start: range.startIndex, end: range.startIndex), elements: Array(value))))
+            collectionChanged.on(.Next(.Removed(elements: old, atIndex: range.startIndex)))
+            collectionChanged.on(.Next(.Added(elements: Array(value), atIndex: range.startIndex)))
         }
     }
 }

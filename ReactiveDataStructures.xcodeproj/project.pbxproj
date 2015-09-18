@@ -14,6 +14,8 @@
 		701E61111BA56BFC00488CFA /* RxSwift.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701E61101BA56BFC00488CFA /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		70FBF4C81BA78A3E0019A32F /* RxBlocking.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70FBF4C71BA78A3E0019A32F /* RxBlocking.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		70FBF4C91BA78A4F0019A32F /* RxBlocking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FBF4C71BA78A3E0019A32F /* RxBlocking.framework */; };
+		CB7805C81BAB327F0036262E /* ObservableStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB7805C71BAB327F0036262E /* ObservableStructure.swift */; settings = {ASSET_TAGS = (); }; };
+		CB7805CA1BAB34500036262E /* ObservableStructureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB7805C91BAB34500036262E /* ObservableStructureTests.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,10 +49,11 @@
 		701E60F41BA564CD00488CFA /* ReactiveDataStructuresTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReactiveDataStructuresTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		701E60FB1BA564CD00488CFA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		701E61041BA564E500488CFA /* ObservableArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableArray.swift; sourceTree = "<group>"; };
-		701E61061BA564F900488CFA /* ReactiveDataStructuresTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ReactiveDataStructuresTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		701E61071BA564F900488CFA /* ObservableArrayTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableArrayTests.swift; sourceTree = "<group>"; };
 		701E61101BA56BFC00488CFA /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/Mac/RxSwift.framework; sourceTree = "<group>"; };
 		70FBF4C71BA78A3E0019A32F /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxBlocking.framework; path = Carthage/Build/Mac/RxBlocking.framework; sourceTree = "<group>"; };
+		CB7805C71BAB327F0036262E /* ObservableStructure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableStructure.swift; sourceTree = "<group>"; };
+		CB7805C91BAB34500036262E /* ObservableStructureTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableStructureTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +102,7 @@
 				701E60ED1BA564CD00488CFA /* ReactiveDataStructures.h */,
 				701E60EF1BA564CD00488CFA /* Info.plist */,
 				701E61041BA564E500488CFA /* ObservableArray.swift */,
+				CB7805C71BAB327F0036262E /* ObservableStructure.swift */,
 			);
 			path = ReactiveDataStructures;
 			sourceTree = "<group>";
@@ -108,7 +112,7 @@
 			children = (
 				701E60FB1BA564CD00488CFA /* Info.plist */,
 				701E61071BA564F900488CFA /* ObservableArrayTests.swift */,
-				701E61061BA564F900488CFA /* ReactiveDataStructuresTests-Bridging-Header.h */,
+				CB7805C91BAB34500036262E /* ObservableStructureTests.swift */,
 			);
 			path = ReactiveDataStructuresTests;
 			sourceTree = "<group>";
@@ -222,6 +226,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB7805C81BAB327F0036262E /* ObservableStructure.swift in Sources */,
 				701E61051BA564E500488CFA /* ObservableArray.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -230,6 +235,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB7805CA1BAB34500036262E /* ObservableStructureTests.swift in Sources */,
 				701E61081BA564F900488CFA /* ObservableArrayTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -389,7 +395,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.swapoff.ReactiveDataStructuresTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "ReactiveDataStructuresTests/ReactiveDataStructuresTests-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -407,7 +413,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.swapoff.ReactiveDataStructuresTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "ReactiveDataStructuresTests/ReactiveDataStructuresTests-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Release;
 		};

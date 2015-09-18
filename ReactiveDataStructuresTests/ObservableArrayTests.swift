@@ -7,160 +7,107 @@
 //
 
 import XCTest
-import RxSwift
-import RxBlocking
 @testable import ReactiveDataStructures
-
-class TestStructure: ObservableStructure, CustomStringConvertible {
-    private var publishPropertyChange = PublishSubject<String>()
-    var propertyChanged: Observable<String> { return publishPropertyChange }
-
-    var name: String { didSet(value) { publishPropertyChange.on(.Next("name")) } }
-    var age: Int { didSet(value) { publishPropertyChange.on(.Next("age")) } }
-
-    init(name: String, age: Int) {
-        self.name = name
-        self.age = age
-    }
-
-    var description: String {
-        return "(\(name), \(age))"
-    }
-}
 
 class ObservableArrayTests: XCTestCase {
     var collection:ObservableArray<String>!
+    var event:ObservableArrayEvent<String>?
 
     override func setUp() {
         super.setUp()
         collection = ["stuff", "things"]
+        collection.collectionChanged.subscribeNext{ event in self.event = event }
     }
 
+    func testInit() {
+        XCTAssertNotNil(ObservableArray<String>())
+        XCTAssertNotNil(ObservableArray<String>(source: ["test"]))
+    }
+    
     func testAppend() {
         let item = "item"
-        collection.collectionChanged
-            .subscribeNext { event in
-                switch event {
-                case let .Added(location, actual):
-                    XCTAssertEqual(actual, [item])
-                    XCTAssertEqual(location.startIndex, 2)
-                default: break
-                }
-        }
+        let index = collection.count
         collection.append(item)
-        XCTAssertEqual(collection.last, item)
+        assertAdded(event, elements: [item], index: index)
+        XCTAssertEqual(collection.count, index + 1)
     }
 
     func testInsert() {
         let item = "item"
-        collection.collectionChanged
-            .subscribeNext { event in
-                if let (element, index) = event.insertedElement() {
-                    XCTAssertEqual(element, item)
-                    XCTAssertEqual(index, 1)
-                }
-        }
-        collection.insert(item, atIndex: 1)
+        let index = 1
+        collection.insert(item, atIndex: index)
+        assertAdded(event, elements: [item], index: index)
+        XCTAssertEqual(collection.count, 3)
     }
 
     func testAppendContentsOf() {
         let items = ["item1", "item2"]
-        collection.collectionChanged
-            .subscribeNext { event in
-                switch event {
-                case let .Added(range, elements):
-                    XCTAssertEqual(range.startIndex, 2)
-                    XCTAssertEqual(range.endIndex, 4)
-                    XCTAssertEqual(elements.first, items.first)
-                    XCTAssertEqual(elements.last, items.last)
-                default: break
-                }
-        }
+        let index = collection.count
         collection.appendContentsOf(items)
+        assertAdded(event, elements: items, index: index)
+        XCTAssertEqual(collection.count, index + items.count)
     }
 
     func testRemoveAtIndex() {
-        let item = "item"
-        //first add an item to test with
-        collection.append(item)
+        let index = 1
+        let item = collection[index]
 
-        collection.collectionChanged
-            .subscribeNext { event in
-                if let (element, index) = event.removedElement() {
-                    XCTAssertEqual(element, item)
-                    XCTAssertEqual(index, 2)
-                }
-        }
-        collection.removeAtIndex(2)
+        // append anther item so we can remove from the middle
+        collection.append("item")
+        
+        collection.removeAtIndex(index)
+        assertRemoved(event, elements: [item], index: index)
     }
 
     func testRemoveFirst() {
-        let first = collection.first
-
-        collection.collectionChanged
-            .subscribeNext { event in
-                switch event {
-                case let .Removed(location, removedItems):
-                    XCTAssertEqual(removedItems, [first!])
-                    XCTAssertEqual(location.startIndex, 0)
-                default: break
-                }
-        }
+        let index = 0
+        let item = collection[index]
+        
         collection.removeFirst()
+        assertRemoved(event, elements: [item], index: index)
     }
 
     func testRemoveLast() {
-        let last = collection.last
+        let index = collection.count - 1
+        let item = collection.last!
 
-        collection.collectionChanged
-            .subscribeNext { event in
-                switch event {
-                case let .Removed(location, removedItems):
-                    XCTAssertEqual(removedItems, [last!])
-                    XCTAssertEqual(location.startIndex, 1)
-                default: break
-                }
-        }
         collection.removeLast()
+        assertRemoved(event, elements: [item], index: index)
     }
 
     func testRemoveAll() {
-        let firstElement = collection.first
-        let lastElement = collection.last
-        collection.collectionChanged
-            .subscribeNext { event in
-                switch event {
-                case let .Removed(range, elements):
-                    XCTAssertEqual(range.startIndex, 0)
-                    XCTAssertEqual(range.endIndex, 2)
-                    XCTAssertEqual(elements.first, firstElement)
-                    XCTAssertEqual(elements.last, lastElement)
-                default: break
-                }
-        }
+        let items = Array(collection)
+        
         collection.removeAll()
+        assertRemoved(event, elements: items, index: 0)
     }
 
     func testReplaceRange() {
         let items = ["item1", "item2"]
-        let firstElement = collection.first
-        let lastElement = collection.last
+        let range = 0...1
+        let oldItems = Array(collection[range])
+        
+        var added = false
+        var removed = false
 
         collection.collectionChanged
             .subscribeNext { event in
                 switch event {
-                case let .Added(range, elements):
-                    XCTAssertEqual(range.startIndex, 0)
-                    XCTAssertEqual(range.endIndex, 2)
-                    XCTAssertEqual(elements.first, items.first)
-                    XCTAssertEqual(elements.last, items.last)
-                case let .Removed(range, elements):
-                    XCTAssertEqual(range.startIndex, 0)
-                    XCTAssertEqual(range.endIndex, 2)
-                    XCTAssertEqual(elements.first, firstElement)
-                    XCTAssertEqual(elements.last, lastElement)
+                case let .Added(elements, index):
+                    XCTAssertEqual(elements, items)
+                    XCTAssertEqual(index, range.startIndex)
+                    added = true
+                case let .Removed(elements, index):
+                    XCTAssertEqual(elements, oldItems)
+                    XCTAssertEqual(index, range.startIndex)
+                    removed = true
                 }
         }
+        
+        collection.replaceRange(range, with: items)
+        XCTAssert(added)
+        XCTAssert(removed)
+        XCTAssertEqual(Array(collection[range]), items)
     }
 
     func testPopLast() {
@@ -171,40 +118,134 @@ class ObservableArrayTests: XCTestCase {
         XCTAssertEqual(collection.popLast(), nil)
     }
 
-    func testSubscriptIndex() {
+    func testSetSubscriptIndex() {
         let newValue = "newValue"
-        let firstItem = collection.first!
+        let valueIndex = 0
+        let firstItem = collection[valueIndex]
+        var added = false
+        var removed = false
 
         collection.collectionChanged
             .subscribeNext { event in
                 switch event {
-                case let .Added(location, insertedItems):
-                    XCTAssertEqual(insertedItems, [newValue])
-                    XCTAssertEqual(location.startIndex, 0)
-                case let .Removed(location, removedItems):
-                    XCTAssertEqual(removedItems, [firstItem])
-                    XCTAssertEqual(location.startIndex, 0)
+                case let .Added(elements, index):
+                    XCTAssertEqual(elements, [newValue])
+                    XCTAssertEqual(index, valueIndex)
+                    added = true
+                case let .Removed(elements, index):
+                    XCTAssertEqual(elements, [firstItem])
+                    XCTAssertEqual(index, valueIndex)
+                    removed = true
                 }
         }
 
-        XCTAssertEqual(collection[0], collection.first)
         collection[0] = newValue
+        XCTAssert(added)
+        XCTAssert(removed)
+        XCTAssertEqual(collection[valueIndex], newValue)
+    }
+    
+    func testSetSubscriptRange() {
+        let items = ["item1", "item2"]
+        let range = 0...1
+        let oldItems = Array(collection[range])
+        
+        var added = false
+        var removed = false
+        
+        collection.collectionChanged
+            .subscribeNext { event in
+                switch event {
+                case let .Added(elements, index):
+                    XCTAssertEqual(elements, items)
+                    XCTAssertEqual(index, range.startIndex)
+                    added = true
+                case let .Removed(elements, index):
+                    XCTAssertEqual(elements, oldItems)
+                    XCTAssertEqual(index, range.startIndex)
+                    removed = true
+                }
+        }
+        
+        collection[range] = items[range]
+        XCTAssert(added)
+        XCTAssert(removed)
+        XCTAssertEqual(Array(collection[range]), items)
+    }
+    
+    func testInsertedElement() {
+        let item = "item"
+        let atIndex = collection.count
+        var inserted = false
+        collection.collectionChanged
+            .subscribeNext { event in
+                if let (element, index) = event.insertedElement() {
+                    XCTAssertEqual(element, item)
+                    XCTAssertEqual(index, atIndex)
+                    inserted = true
+                }
+        }
+        collection.insert(item, atIndex: atIndex)
+        XCTAssert(inserted)
+    }
+    
+    func testRemovedElement() {
+        let atIndex = 0
+        let item = collection[atIndex]
+        var removed = false
+        collection.collectionChanged
+            .subscribeNext { event in
+                if let (element, index) = event.removedElement() {
+                    XCTAssertEqual(element, item)
+                    XCTAssertEqual(index, atIndex)
+                    removed = true
+                }
+        }
+        collection.removeAtIndex(atIndex)
+        XCTAssert(removed)
+    }
+    
+    func testEquatable() {
+        let items = ["item1", "item2"]
+        let index = 2
+        let added1 = ObservableArrayEvent.Added(elements: items, atIndex: index)
+        let added2 = ObservableArrayEvent.Added(elements: items, atIndex: index)
+        let removed1 = ObservableArrayEvent.Removed(elements: items, atIndex: index)
+        let removed2 = ObservableArrayEvent.Removed(elements: items, atIndex: index)
+        
+        XCTAssert(added1 == added2)
+        XCTAssert(removed1 == removed2)
+    }
+    
+//MARK: Custom assertions
+    
+    private func assertAdded(event:ObservableArrayEvent<String>?, elements:[String], index:Int) {
+        XCTAssertNotNil(event)
+        var added = false
+        switch event! {
+        case let .Added(e, i):
+            XCTAssertEqual(e, elements)
+            XCTAssertEqual(i, index)
+            added = true
+        case .Removed:
+            XCTFail("Only .Added expected")
+        }
+        XCTAssert(added)
+    }
+    
+    private func assertRemoved(event:ObservableArrayEvent<String>?, elements:[String], index:Int) {
+        XCTAssertNotNil(event)
+        var removed = false
+        switch event! {
+        case .Added:
+            XCTFail("Only .Removed expected")
+        case let .Removed(e, i):
+            XCTAssertEqual(e, elements)
+            XCTAssertEqual(i, index)
+            removed = true
+        }
+        XCTAssert(removed)
     }
 
-    func testElementChanged() {
-        let a = TestStructure(name: "Arthur", age: 20)
-        let b = TestStructure(name: "Bob", age: 20)
-
-        let collection = ObservableArray<TestStructure>(source: [a])
-        var events: [String] = []
-        collection.elementChanged
-            .subscribeNext({(e, f) in
-                events.append("\(e).\(f)")
-            })
-        a.name = "Alec"
-        XCTAssertEqual(events, ["(Alec, 20).name"])
-        collection.append(b)
-        b.age = 30
-        XCTAssertEqual(events, ["(Alec, 20).name", "(Bob, 30).age"])
-    }
+    
 }
