@@ -20,7 +20,8 @@ public enum ObservableArrayEvent<Element> {
             if elements.count == 1 {
                 return (elements[0], atIndex)
             }
-        default: break
+        case .Removed:
+            break
         }
         return nil
     }
@@ -28,11 +29,12 @@ public enum ObservableArrayEvent<Element> {
     // Returns non-nil if the event is a single element delete.
     public func removedElement() -> (Element, Int)? {
         switch self {
+        case .Added:
+            break
         case let .Removed(elements, atIndex):
             if elements.count == 1 {
                 return (elements[0], atIndex)
             }
-        default: break
         }
         return nil
     }

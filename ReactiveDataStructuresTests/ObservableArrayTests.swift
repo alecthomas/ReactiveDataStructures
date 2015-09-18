@@ -227,7 +227,7 @@ class ObservableArrayTests: XCTestCase {
             XCTAssertEqual(e, elements)
             XCTAssertEqual(i, index)
             added = true
-        default:
+        case .Removed:
             XCTFail("Only .Added expected")
         }
         XCTAssert(added)
@@ -237,12 +237,12 @@ class ObservableArrayTests: XCTestCase {
         XCTAssertNotNil(event)
         var removed = false
         switch event! {
+        case .Added:
+            XCTFail("Only .Removed expected")
         case let .Removed(e, i):
             XCTAssertEqual(e, elements)
             XCTAssertEqual(i, index)
             removed = true
-        default:
-            XCTFail("Only .Removed expected")
         }
         XCTAssert(removed)
     }
